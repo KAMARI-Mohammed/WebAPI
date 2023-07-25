@@ -1,3 +1,8 @@
+using chatApp.Data;
+using chatApp.Hubs;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -14,7 +19,19 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    
 }
+//Reggister dbcontext
+var connectionString=builder.Configuration.GetConnectionString("MyDbContext");
+builder.Services.AddDbContext<MyDbContext>(Options => Options.UseSqlServer(connectionString));
+
+//SignalR
+builder.Services.AddSignalR();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapHub<ChatHub>("/Home/Index");
+});
 
 app.UseHttpsRedirection();
 
